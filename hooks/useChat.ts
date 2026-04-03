@@ -17,7 +17,7 @@ export function useChat({ model, ...agentTasksProps }: UseChatProps): UseChat {
     const { agentTasks, createAgentTask } = useAgentTasks(agentTasksProps)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const lastAssistantRef = useRef<{
-        role: 'assistant'
+        role: 'ASSISTANT'
         content: string
     } | null>(null)
 
@@ -28,26 +28,23 @@ export function useChat({ model, ...agentTasksProps }: UseChatProps): UseChat {
         setIsSubmitting(true)
 
         let nextMessages: {
-            role: 'user' | 'assistant' | 'system'
+            role: 'USER' | 'ASSISTANT' | 'SYSTEM'
             content: string
         }[]
         const lastTask = agentTasks.at(-1)
-        const newUserMsg = { role: 'user' as const, content: trimmed }
+        const newUserMsg = { role: 'USER' as const, content: trimmed }
 
-        if (!lastTask) {
-            nextMessages = [newUserMsg]
+        const priorMessages =
+            lastTask && lastTask.params.type === 'MemoryChatCompletion'
+                ? lastTask.params.messages
+                : []
+
+        const assistantMsg = lastAssistantRef.current
+        if (assistantMsg) {
+            nextMessages = [...priorMessages, assistantMsg, newUserMsg]
+            lastAssistantRef.current = null
         } else {
-            const assistantMsg = lastAssistantRef.current
-            if (assistantMsg) {
-                nextMessages = [
-                    ...lastTask.params.messages,
-                    assistantMsg,
-                    newUserMsg,
-                ]
-                lastAssistantRef.current = null
-            } else {
-                nextMessages = [...lastTask.params.messages, newUserMsg]
-            }
+            nextMessages = [...priorMessages, newUserMsg]
         }
 
         try {
@@ -61,8 +58,8 @@ export function useChat({ model, ...agentTasksProps }: UseChatProps): UseChat {
                 response.response.taskType === 'MemoryChatCompletion'
             ) {
                 lastAssistantRef.current = {
-                    role: 'assistant',
-                    content: response.response.text,
+                    role: 'ASSISTANT',
+                    content: response.response.response.textResponse,
                 }
             }
         } catch {
