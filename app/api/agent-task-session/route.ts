@@ -7,8 +7,10 @@ export async function POST() {
             guardRails: {
                 memoryTypes: [
                     {
-                        memoryTypeId: 'mty_3dd204c202ae411f948a72ecb720a701',
-                        memoryIds: ['mem_d61da23d920c4947ad06d4c189370cf4'],
+                        memoryTypeId: 'mty_51c0e3fe67c749ec811deca735e6fa53',
+                        match: {
+                            pokemonTag: 'pokemons-v3',
+                        },
                     },
                 ],
             },
