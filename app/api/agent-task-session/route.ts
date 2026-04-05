@@ -3,7 +3,7 @@ import { createSession } from '../createSession'
 export async function POST() {
     return await createSession({
         createAgentTask: {
-            taskType: 'MEMORY_CHAT_COMPLETION',
+            taskType: 'MEMORY_CHAT',
             guardRails: {
                 memoryTypes: [
                     {

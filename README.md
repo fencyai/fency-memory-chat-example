@@ -106,7 +106,7 @@ Creates a Memory Chat Completion session. The `guardRails.memoryTypes` field gra
 export async function POST() {
     return await createSession({
         createAgentTask: {
-            taskType: 'MEMORY_CHAT_COMPLETION',
+            taskType: 'MEMORY_CHAT',
             guardRails: {
                 memoryTypes: [
                     {
@@ -141,17 +141,17 @@ The hook requires a `fetchCreateAgentTaskClientToken` callback it uses to obtain
 `useChat` wraps `useAgentTasks` to manage multi-turn conversation state. On each user message it:
 
 1. Builds the next `messages` array by appending the previous assistant reply (stored in `lastAssistantRef`) and the new user message to the prior turn's message list
-2. Calls `createAgentTask` with `type: 'MemoryChatCompletion'`, the accumulated messages, and the model
+2. Calls `createAgentTask` with `type: 'MemoryChat'`, the accumulated messages, and the model
 3. Stores the assistant reply text (from `response.response.text`) in `lastAssistantRef` so it can be threaded into the next turn
 
 ```ts
 const response = await createAgentTask({
-    type: 'MemoryChatCompletion',
+    type: 'MemoryChat',
     messages: nextMessages,
     model,  // 'openai/gpt-4.1-mini'
 })
 
-if (response.type === 'success' && response.response.taskType === 'MemoryChatCompletion') {
+if (response.type === 'success' && response.response.taskType === 'MemoryChat') {
     lastAssistantRef.current = {
         role: 'assistant',
         content: response.response.text,
